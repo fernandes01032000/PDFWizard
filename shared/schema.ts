@@ -1,6 +1,7 @@
-import { pgTable, text, varchar, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, integer, boolean, jsonb, timestamp, serial } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { nanoid } from "nanoid";
 
 export const fieldTypes = [
   "text",
@@ -13,6 +14,40 @@ export const fieldTypes = [
 ] as const;
 
 export type FieldType = typeof fieldTypes[number];
+
+// Drizzle ORM Table Definitions
+export const templates = pgTable("templates", {
+  id: varchar("id").primaryKey().$defaultFn(() => nanoid()),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  pdfFileName: varchar("pdf_file_name", { length: 255 }).notNull(),
+  pdfFileSize: integer("pdf_file_size").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const fields = pgTable("fields", {
+  id: varchar("id").primaryKey().$defaultFn(() => nanoid()),
+  templateId: varchar("template_id").notNull().references(() => templates.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  type: varchar("type", { length: 50 }).notNull(),
+  x: integer("x").notNull(),
+  y: integer("y").notNull(),
+  width: integer("width").notNull(),
+  height: integer("height").notNull(),
+  fontSize: integer("font_size").notNull().default(12),
+  required: boolean("required").notNull().default(false),
+  placeholder: text("placeholder"),
+  defaultValue: text("default_value"),
+  options: jsonb("options").$type<string[]>(),
+  validation: jsonb("validation").$type<{
+    pattern?: string;
+    minLength?: number;
+    maxLength?: number;
+    min?: number;
+    max?: number;
+  }>(),
+});
 
 export const fieldSchema = z.object({
   id: z.string(),
@@ -38,9 +73,21 @@ export const fieldSchema = z.object({
 
 export type Field = z.infer<typeof fieldSchema>;
 
-export const insertFieldSchema = fieldSchema.omit({ id: true });
+// Drizzle insert schemas
+export const insertTemplateSchema = createInsertSchema(templates).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertTemplate = z.infer<typeof insertTemplateSchema>;
+
+export const insertFieldSchema = createInsertSchema(fields).omit({
+  id: true,
+  templateId: true,
+});
 export type InsertField = z.infer<typeof insertFieldSchema>;
 
+// Template type with fields (for API responses)
 export const templateSchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Template name is required"),
@@ -53,15 +100,6 @@ export const templateSchema = z.object({
 });
 
 export type Template = z.infer<typeof templateSchema>;
-
-export const insertTemplateSchema = templateSchema.omit({ 
-  id: true, 
-  fields: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export type InsertTemplate = z.infer<typeof insertTemplateSchema>;
 
 export const updateTemplateSchema = insertTemplateSchema.partial();
 export type UpdateTemplate = z.infer<typeof updateTemplateSchema>;
