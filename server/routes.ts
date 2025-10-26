@@ -80,6 +80,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Template name is required" });
       }
 
+      // Validate PDF file
+      try {
+        await PDFDocument.load(req.file.buffer);
+      } catch (pdfError) {
+        console.error("PDF validation error:", pdfError);
+        return res.status(400).json({ error: "Invalid PDF file - the uploaded file may be corrupted or not a valid PDF" });
+      }
+
       // Create template
       const template = await storage.createTemplate({
         name,
@@ -263,8 +271,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedFormData = formDataSchema.parse(formData || {});
 
       // Load the PDF
-      const pdfDoc = await PDFDocument.load(pdfBuffer);
+      let pdfDoc;
+      try {
+        pdfDoc = await PDFDocument.load(pdfBuffer);
+      } catch (loadError) {
+        console.error("PDF load error:", loadError);
+        return res.status(400).json({ error: "Invalid PDF file - the uploaded file may be corrupted or not a valid PDF" });
+      }
+
       const pages = pdfDoc.getPages();
+      if (pages.length === 0) {
+        return res.status(400).json({ error: "PDF has no pages" });
+      }
+      
       const firstPage = pages[0];
       const { height } = firstPage.getSize();
 
