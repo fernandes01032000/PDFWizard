@@ -4,6 +4,7 @@ import { TopNavigation } from "@/components/pdf-builder/TopNavigation";
 import { FieldLibraryPanel } from "@/components/pdf-builder/FieldLibraryPanel";
 import { FieldPropertiesPanel } from "@/components/pdf-builder/FieldPropertiesPanel";
 import { PDFCanvas } from "@/components/pdf-builder/PDFCanvas";
+import { PDFPreview } from "@/components/pdf-builder/PDFPreview";
 import { CanvasToolbar } from "@/components/pdf-builder/CanvasToolbar";
 import { FormBuilderPanel } from "@/components/pdf-builder/FormBuilderPanel";
 import { UploadPDFDialog } from "@/components/pdf-builder/UploadPDFDialog";
@@ -431,27 +432,38 @@ export default function PDFBuilder() {
 
         {/* Main Canvas Area */}
         <main className="flex-1 flex flex-col">
-          <CanvasToolbar
-            zoom={zoom}
-            showGrid={showGrid}
-            showRulers={showRulers}
-            onZoomChange={setZoom}
-            onToggleGrid={() => setShowGrid(!showGrid)}
-            onToggleRulers={() => setShowRulers(!showRulers)}
-          />
-          
-          <div className="flex-1 overflow-hidden">
-            <PDFCanvas
-              pdfUrl={pdfUrl}
-              fields={fields}
-              selectedFieldId={selectedFieldId}
+          {currentMode === "design" && (
+            <CanvasToolbar
+              zoom={zoom}
               showGrid={showGrid}
               showRulers={showRulers}
-              zoom={zoom}
-              onFieldSelect={setSelectedFieldId}
-              onFieldUpdate={handleFieldUpdate}
-              onFieldDrop={handleFieldDrop}
+              onZoomChange={setZoom}
+              onToggleGrid={() => setShowGrid(!showGrid)}
+              onToggleRulers={() => setShowRulers(!showRulers)}
             />
+          )}
+          
+          <div className="flex-1 overflow-hidden">
+            {currentMode === "design" ? (
+              <PDFCanvas
+                pdfUrl={pdfUrl}
+                fields={fields}
+                selectedFieldId={selectedFieldId}
+                showGrid={showGrid}
+                showRulers={showRulers}
+                zoom={zoom}
+                onFieldSelect={setSelectedFieldId}
+                onFieldUpdate={handleFieldUpdate}
+                onFieldDrop={handleFieldDrop}
+              />
+            ) : (
+              <PDFPreview
+                pdfUrl={pdfUrl}
+                fields={fields}
+                formData={formData}
+                zoom={1}
+              />
+            )}
           </div>
         </main>
       </div>
