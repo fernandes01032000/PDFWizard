@@ -136,6 +136,26 @@ export default function PDFBuilder() {
     },
   });
 
+  // Duplicate template mutation
+  const duplicateTemplateMutation = useMutation({
+    mutationFn: (id: string) => apiRequest<Template>('POST', `/api/templates/${id}/duplicate`),
+    onSuccess: (template) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/templates'] });
+      
+      toast({
+        title: "Template Duplicated",
+        description: `"${template.name}" has been created`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Duplication Failed",
+        description: "Failed to duplicate template",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Generate PDF mutation
   const generatePDFMutation = useMutation({
     mutationFn: async ({ templateId, formData }: { templateId: string; formData: TemplateFormData }) => {
@@ -332,6 +352,10 @@ export default function PDFBuilder() {
     deleteTemplateMutation.mutate(templateId);
   };
 
+  const handleDuplicateTemplate = (templateId: string) => {
+    duplicateTemplateMutation.mutate(templateId);
+  };
+
   const handlePreviewForm = () => {
     if (fields.length === 0) {
       toast({
@@ -455,6 +479,7 @@ export default function PDFBuilder() {
         templates={templates}
         onSelectTemplate={handleLoadTemplate}
         onDeleteTemplate={handleDeleteTemplate}
+        onDuplicateTemplate={handleDuplicateTemplate}
       />
     </div>
   );

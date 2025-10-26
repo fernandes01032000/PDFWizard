@@ -11,6 +11,7 @@ export const fieldTypes = [
   "dropdown",
   "date",
   "signature",
+  "image",
 ] as const;
 
 export type FieldType = typeof fieldTypes[number];

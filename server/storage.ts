@@ -11,6 +11,7 @@ export interface IStorage {
   getAllTemplates(): Promise<Template[]>;
   updateTemplate(id: string, updates: UpdateTemplate): Promise<Template | undefined>;
   deleteTemplate(id: string): Promise<boolean>;
+  duplicateTemplate(id: string): Promise<Template | undefined>;
   
   // Field operations
   addField(templateId: string, field: InsertField): Promise<Field | undefined>;
@@ -75,6 +76,35 @@ export class MemStorage implements IStorage {
       this.pdfFiles.delete(id);
     }
     return deleted;
+  }
+
+  async duplicateTemplate(id: string): Promise<Template | undefined> {
+    const original = this.templates.get(id);
+    if (!original) return undefined;
+
+    const newId = randomUUID();
+    const now = new Date().toISOString();
+    
+    const duplicated: Template = {
+      ...original,
+      id: newId,
+      name: `${original.name} (Copy)`,
+      fields: original.fields.map(field => ({
+        ...field,
+        id: randomUUID(),
+      })),
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    this.templates.set(newId, duplicated);
+
+    const originalPDF = this.pdfFiles.get(id);
+    if (originalPDF) {
+      this.pdfFiles.set(newId, originalPDF);
+    }
+
+    return duplicated;
   }
 
   // Field operations
@@ -228,6 +258,45 @@ export class DBStorage implements IStorage {
     const result = await db.delete(templates).where(eq(templates.id, id));
     this.pdfFiles.delete(id);
     return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async duplicateTemplate(id: string): Promise<Template | undefined> {
+    const original = await this.getTemplate(id);
+    if (!original) return undefined;
+
+    const [newTemplate] = await db.insert(templates).values({
+      name: `${original.name} (Copy)`,
+      description: original.description,
+      pdfFileName: original.pdfFileName,
+      pdfFileSize: original.pdfFileSize,
+    }).returning();
+
+    if (!newTemplate) return undefined;
+
+    for (const field of original.fields) {
+      await db.insert(fields).values({
+        templateId: newTemplate.id,
+        name: field.name,
+        type: field.type,
+        x: field.x,
+        y: field.y,
+        width: field.width,
+        height: field.height,
+        fontSize: field.fontSize,
+        required: field.required,
+        placeholder: field.placeholder || null,
+        defaultValue: field.defaultValue || null,
+        options: field.options || null,
+        validation: field.validation || null,
+      });
+    }
+
+    const originalPDF = this.pdfFiles.get(id);
+    if (originalPDF) {
+      this.pdfFiles.set(newTemplate.id, originalPDF);
+    }
+
+    return this.getTemplate(newTemplate.id);
   }
 
   // Field operations

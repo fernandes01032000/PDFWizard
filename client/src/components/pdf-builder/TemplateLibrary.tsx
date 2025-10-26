@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Template } from "@shared/schema";
-import { Search, FileText, Calendar, Trash2 } from "lucide-react";
+import { Search, FileText, Calendar, Trash2, Copy } from "lucide-react";
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -21,6 +21,7 @@ interface TemplateLibraryProps {
   templates: Template[];
   onSelectTemplate: (template: Template) => void;
   onDeleteTemplate: (templateId: string) => void;
+  onDuplicateTemplate: (templateId: string) => void;
 }
 
 export function TemplateLibrary({
@@ -29,6 +30,7 @@ export function TemplateLibrary({
   templates,
   onSelectTemplate,
   onDeleteTemplate,
+  onDuplicateTemplate,
 }: TemplateLibraryProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -94,18 +96,30 @@ export function TemplateLibrary({
                             </p>
                           )}
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteTemplate(template.id);
-                          }}
-                          className="flex-shrink-0"
-                          data-testid={`button-delete-template-${template.id}`}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDuplicateTemplate(template.id);
+                            }}
+                            data-testid={`button-duplicate-template-${template.id}`}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteTemplate(template.id);
+                            }}
+                            data-testid={`button-delete-template-${template.id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-2 flex-wrap">

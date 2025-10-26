@@ -13,7 +13,7 @@ import {
 } from "@shared/schema";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
-// Configure multer for file uploads (memory storage)
+// Configure multer for PDF uploads
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -28,7 +28,45 @@ const upload = multer({
   },
 });
 
+// Configure multer for image uploads
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files are allowed"));
+    }
+  },
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Upload image
+  app.post("/api/upload-image", imageUpload.single("image"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No image file provided" });
+      }
+
+      // Convert image to base64 data URL
+      const base64 = req.file.buffer.toString("base64");
+      const dataUrl = `data:${req.file.mimetype};base64,${base64}`;
+
+      res.json({ 
+        url: dataUrl,
+        filename: req.file.originalname,
+        size: req.file.size,
+        mimeType: req.file.mimetype,
+      });
+    } catch (error) {
+      console.error("Upload image error:", error);
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  });
+
   // Upload PDF and create template
   app.post("/api/upload-pdf", upload.single("pdf"), async (req, res) => {
     try {
@@ -127,6 +165,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Delete template error:", error);
       res.status(500).json({ error: "Failed to delete template" });
+    }
+  });
+
+  // Duplicate template
+  app.post("/api/templates/:id/duplicate", async (req, res) => {
+    try {
+      const original = await storage.getTemplate(req.params.id);
+      
+      if (!original) {
+        return res.status(404).json({ error: "Template not found" });
+      }
+
+      const duplicated = await storage.duplicateTemplate(req.params.id);
+      
+      if (!duplicated) {
+        return res.status(500).json({ error: "Failed to duplicate template" });
+      }
+      
+      res.json(duplicated);
+    } catch (error) {
+      console.error("Duplicate template error:", error);
+      res.status(500).json({ error: "Failed to duplicate template" });
     }
   });
 

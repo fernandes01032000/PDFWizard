@@ -8,6 +8,7 @@ import {
   ChevronDown, 
   Calendar, 
   PenTool,
+  Image,
   Search 
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -64,6 +65,12 @@ const fieldTypes: FieldTypeInfo[] = [
     label: "Signature", 
     icon: <PenTool className="h-5 w-5" />,
     description: "Digital signature pad"
+  },
+  { 
+    type: "image", 
+    label: "Image", 
+    icon: <Image className="h-5 w-5" />,
+    description: "Upload and display image"
   },
 ];
 
