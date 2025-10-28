@@ -1,8 +1,10 @@
-# 📄 DocsHgumba
+# 📄 DocsHgumba v2.0 - Mobile Otimizado
 
 Sistema 100% offline para criação e preenchimento de PDFs com campos editáveis.
 
 **Desenvolvido para:** Hospital/Unidades de Saúde - Uso interno sem dependência de internet.
+
+![Version](https://img.shields.io/badge/version-2.0-success) ![Offline](https://img.shields.io/badge/status-100%25%20Offline-blue) ![Mobile](https://img.shields.io/badge/mobile-optimized-green)
 
 ---
 
@@ -10,10 +12,52 @@ Sistema 100% offline para criação e preenchimento de PDFs com campos editávei
 
 DocsHgumba é uma aplicação web leve que funciona **totalmente no navegador**, sem precisar de servidor ou conexão com a internet. Permite:
 
-1. **Criar templates** de PDF com campos editáveis (texto, data, checkbox, assinatura)
-2. **Salvar templates** reutilizáveis
-3. **Preencher formulários** com preview em tempo real
-4. **Gerar PDFs** preenchidos para download
+1. **Criar templates** de PDF com campos editáveis (texto, data, checkbox, assinatura, imagem)
+2. **Salvar templates** reutilizáveis com armazenamento local persistente
+3. **Exportar/Importar templates** para compartilhamento entre dispositivos
+4. **Preencher formulários** com preview em tempo real
+5. **Gerar PDFs** preenchidos para download
+6. **Usar em tablets e smartphones** com interface mobile-first
+
+## ✨ Novidades v2.0
+
+### 📱 Responsividade Mobile Completa
+- Layout adaptativo: Desktop (3 colunas) → Tablet (2 colunas) → Mobile (1 coluna)
+- Painéis laterais colapsáveis com menu hamburger
+- Controles touch-friendly (mínimo 44px)
+- Suporte a gestos de arrastar e tocar
+- Otimizado para tablets hospitalares
+
+### 🌙 Modo Escuro/Claro
+- Alternância entre tema claro e escuro
+- Ideal para uso hospitalar noturno
+- Preferência salva automaticamente
+- Botão de alternância no cabeçalho
+
+### ✍️ Assinatura Digital
+- Canvas para desenho manual de assinatura
+- Suporte a toque e mouse
+- Visualização em tempo real no preview
+- Integração automática no PDF final
+
+### 🖼️ Campo de Imagem
+- Upload de logos, carimbos, fotos
+- Suporte a PNG, JPG, WebP
+- Redimensionamento automático
+- Inserção no PDF preservando qualidade
+
+### ⚡ Funcionalidades de Produtividade
+- **Atalhos de teclado**: Ctrl+S (salvar), Delete (remover campo)
+- **Duplicar templates**: Crie cópias rapidamente
+- **Auto-save**: Templates salvos automaticamente
+- **Histórico de PDFs**: Últimos 10 PDFs gerados
+- **Progresso de preenchimento**: Contador visual de campos preenchidos
+- **Grade de alinhamento**: Grade opcional para posicionamento preciso
+
+### 📊 Auto-preenchimento Inteligente
+- Campos de data preenchidos com data atual
+- Validação em tempo real
+- Indicador de campos obrigatórios
 
 ---
 
