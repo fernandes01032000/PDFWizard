@@ -1115,6 +1115,18 @@ function saveTemplate() {
         return;
     }
 
+    // Validate ArrayBuffer is accessible (not detached)
+    try {
+        const testView = new Uint8Array(state.currentPDF);
+        if (testView.byteLength === 0) {
+            throw new Error('PDF buffer is empty');
+        }
+    } catch (error) {
+        console.error('PDF buffer not accessible:', error);
+        showToast('Erro: PDF não está mais acessível. Recarregue o arquivo.', 'danger');
+        return;
+    }
+
     const base64PDF = arrayBufferToBase64(state.currentPDF);
 
     const template = {
