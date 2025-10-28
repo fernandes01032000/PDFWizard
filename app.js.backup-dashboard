@@ -639,8 +639,8 @@ function toggleGrid() {
 
 // ==================== MOBILE MENU ====================
 function initializeMobileMenu() {
-    const menuToggle = document.getElementById('mobile-sidebar-toggle');
-    const overlay = document.getElementById('sidebar-overlay');
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const overlay = document.getElementById('mobile-overlay');
     
     if (menuToggle) {
         menuToggle.addEventListener('click', toggleMobileMenu);
@@ -652,14 +652,29 @@ function initializeMobileMenu() {
 }
 
 function toggleMobileMenu() {
-// ==================== MOBILE NAVIGATION (SIDEBAR) ====================
-function toggleMobileMenu() {
-    toggleSidebar(); // Usar nova função de sidebar
+    const panel = state.currentMode === 'design' 
+        ? document.getElementById('design-panel')
+        : document.getElementById('fill-panel');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    if (panel && overlay) {
+        panel.classList.toggle('show');
+        overlay.classList.toggle('show');
+    }
 }
 
 function closeMobileMenu() {
-    closeSidebar(); // Usar nova função de sidebar
+    const panels = document.querySelectorAll('.mobile-drawer');
+    const overlay = document.getElementById('mobile-overlay');
+    
+    panels.forEach(panel => panel.classList.remove('show'));
+    if (overlay) {
+        overlay.classList.remove('show');
+    }
 }
+
+// ==================== EVENT LISTENERS ====================
+function initializeEventListeners() {
     const uploadInput = document.getElementById('pdf-upload');
     const uploadZone = document.getElementById('upload-zone');
 
@@ -2210,378 +2225,3 @@ console.log('📋 Funcionalidades implementadas:');
 console.log('- FASE 1: Painel de propriedades, Campos especializados (CPF/CNS/Telefone), Categorias');
 console.log('- FASE 2: Autenticação, Biblioteca de textos, Atalhos (Ctrl+E/D), Dashboard');
 console.log('- FASE 3: Lógica condicional, QR Code, Ditado, Backup automático');
-
-// ==================== NAVIGATION & DASHBOARD ====================
-
-// Navegação entre páginas
-function navigateTo(pageName) {
-    // Esconder todas as páginas
-    document.querySelectorAll('.page-content').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    // Mostrar a página selecionada
-    const targetPage = document.getElementById(`page-${pageName}`);
-    if (targetPage) {
-        targetPage.classList.add('active');
-    }
-    
-    // Atualizar menu ativo
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    const activeMenuItem = document.querySelector(`.menu-item[data-page="${pageName}"]`);
-    if (activeMenuItem) {
-        activeMenuItem.classList.add('active');
-    }
-    
-    // Atualizar dashboard se navegando para ele
-    if (pageName === 'dashboard') {
-        updateDashboardStats();
-        loadRecentTemplates();
-    }
-    
-    // Atualizar lista de templates se navegando para templates
-    if (pageName === 'templates') {
-        renderTemplatesGrid();
-    }
-    
-    // Fechar sidebar em mobile
-    closeSidebar();
-}
-
-// Toggle sidebar em mobile
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    sidebar.classList.toggle('show');
-    overlay.classList.toggle('show');
-}
-
-// Fechar sidebar
-function closeSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    sidebar.classList.remove('show');
-    overlay.classList.remove('show');
-}
-
-// Atualizar estatísticas do dashboard
-function updateDashboardStats() {
-    // Templates
-    document.getElementById('stat-templates').textContent = state.templates.length;
-    
-    // Documentos hoje
-    const history = JSON.parse(localStorage.getItem('docsHgumbaHistory') || '[]');
-    const today = new Date().toDateString();
-    const docsToday = history.filter(item => {
-        return new Date(item.timestamp).toDateString() === today;
-    }).length;
-    document.getElementById('stat-docs-today').textContent = docsToday;
-    
-    // Total de documentos
-    document.getElementById('stat-total-docs').textContent = history.length;
-}
-
-// Carregar templates recentes no dashboard
-function loadRecentTemplates() {
-    const recentDiv = document.getElementById('recent-templates');
-    if (!recentDiv) return;
-    
-    if (state.templates.length === 0) {
-        recentDiv.innerHTML = `
-            <div class="text-muted text-center py-4">
-                <i class="bi bi-inbox fs-1"></i>
-                <p class="mb-0 mt-2">Nenhum template cadastrado ainda</p>
-                <button class="btn btn-success btn-sm mt-3" onclick="navigateTo('criar')">
-                    <i class="bi bi-plus-circle me-2"></i>Criar Primeiro Template
-                </button>
-            </div>
-        `;
-        return;
-    }
-    
-    const recent = state.templates.slice(0, 5);
-    recentDiv.innerHTML = recent.map(t => `
-        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-file-earmark-pdf fs-4 text-army-green me-3"></i>
-                <div>
-                    <h6 class="mb-0">${t.name || 'Sem nome'}</h6>
-                    <small class="text-muted">${t.fields ? t.fields.length : 0} campos</small>
-                </div>
-            </div>
-            <div>
-                <button class="btn btn-sm btn-outline-primary me-2" onclick="loadTemplateAndNavigate('${t.id}', 'preencher')">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-secondary" onclick="loadTemplateForEdit('${t.id}')">
-                    <i class="bi bi-gear"></i>
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Carregar template e navegar
-function loadTemplateAndNavigate(templateId, page) {
-    const template = state.templates.find(t => t.id === templateId);
-    if (template) {
-        document.getElementById('template-selector').value = templateId;
-        loadTemplate();
-        navigateTo(page);
-    }
-}
-
-// Carregar template para edição
-function loadTemplateForEdit(templateId) {
-    const template = state.templates.find(t => t.id === templateId);
-    if (!template) return;
-    
-    // Navegar para modo de criação
-    navigateTo('criar');
-    
-    // Carregar PDF
-    if (template.pdfData) {
-        const pdfData = base64ToArrayBuffer(template.pdfData);
-        loadPDFFromArrayBuffer(pdfData, template.name);
-        
-        // Carregar campos
-        state.fields = template.fields || [];
-        renderFields();
-        
-        // Preencher nome
-        document.getElementById('template-name').value = template.name || '';
-        document.getElementById('template-category').value = template.category || '';
-    }
-}
-
-// Renderizar grid de templates
-function renderTemplatesGrid() {
-    const grid = document.getElementById('templates-grid');
-    if (!grid) return;
-    
-    const searchTerm = (document.getElementById('search-templates')?.value || '').toLowerCase();
-    const categoryFilter = document.getElementById('filter-category')?.value || '';
-    
-    let filtered = state.templates;
-    
-    // Filtrar por busca
-    if (searchTerm) {
-        filtered = filtered.filter(t => 
-            (t.name || '').toLowerCase().includes(searchTerm)
-        );
-    }
-    
-    // Filtrar por categoria
-    if (categoryFilter) {
-        filtered = filtered.filter(t => t.category === categoryFilter);
-    }
-    
-    if (filtered.length === 0) {
-        grid.innerHTML = `
-            <div class="col-12 text-muted text-center py-5">
-                <i class="bi bi-inbox fs-1"></i>
-                <p class="mb-0 mt-2">Nenhum template encontrado</p>
-            </div>
-        `;
-        return;
-    }
-    
-    grid.innerHTML = filtered.map(t => `
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-start mb-2">
-                        <i class="bi bi-file-earmark-pdf fs-1 text-army-green me-3"></i>
-                        <div class="flex-grow-1">
-                            <h5 class="card-title mb-1">${t.name || 'Sem nome'}</h5>
-                            <span class="badge bg-secondary">${t.category || 'Sem categoria'}</span>
-                        </div>
-                    </div>
-                    <p class="card-text text-muted small">
-                        <i class="bi bi-grid-3x3 me-1"></i>${t.fields ? t.fields.length : 0} campos
-                    </p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-success btn-sm" onclick="loadTemplateAndNavigate('${t.id}', 'preencher')">
-                            <i class="bi bi-pencil me-2"></i>Preencher
-                        </button>
-                        <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" onclick="loadTemplateForEdit('${t.id}')" title="Editar">
-                                <i class="bi bi-gear"></i>
-                            </button>
-                            <button class="btn btn-outline-secondary" onclick="duplicateTemplate('${t.id}')" title="Duplicar">
-                                <i class="bi bi-files"></i>
-                            </button>
-                            <button class="btn btn-outline-danger" onclick="deleteTemplate('${t.id}')" title="Deletar">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Duplicar template
-function duplicateTemplate(templateId) {
-    const template = state.templates.find(t => t.id === templateId);
-    if (!template) return;
-    
-    const newTemplate = {
-        ...template,
-        id: generateId(),
-        name: `${template.name} (Cópia)`,
-        fields: template.fields.map(f => ({ ...f, id: generateId() }))
-    };
-    
-    state.templates.push(newTemplate);
-    saveToLocalStorage();
-    renderTemplatesGrid();
-    showToast('Template duplicado com sucesso!', 'success');
-}
-
-// Deletar template
-function deleteTemplate(templateId) {
-    if (!confirm('Tem certeza que deseja deletar este template?')) return;
-    
-    state.templates = state.templates.filter(t => t.id !== templateId);
-    saveToLocalStorage();
-    renderTemplatesGrid();
-    updateDashboardStats();
-    showToast('Template deletado com sucesso!', 'success');
-}
-
-// Função de impressão
-function printPDF() {
-    if (!state.generatedPdfBlob) {
-        showToast('Gere o PDF primeiro', 'warning');
-        return;
-    }
-    
-    const blobUrl = URL.createObjectURL(state.generatedPdfBlob);
-    const printWindow = window.open(blobUrl);
-    
-    if (printWindow) {
-        printWindow.onload = function() {
-            printWindow.print();
-        };
-    } else {
-        showToast('Pop-up bloqueado. Permita pop-ups para imprimir.', 'warning');
-    }
-}
-
-// Salvar histórico de documento gerado
-function saveToHistory(templateName, formData) {
-    const history = JSON.parse(localStorage.getItem('docsHgumbaHistory') || '[]');
-    
-    const entry = {
-        id: generateId(),
-        timestamp: new Date().toISOString(),
-        templateName: templateName,
-        user: state.currentUser?.username || 'Desconhecido',
-        patientName: formData['paciente'] || formData['nome'] || 'N/A'
-    };
-    
-    history.unshift(entry);
-    
-    // Manter apenas últimos 100
-    if (history.length > 100) {
-        history.splice(100);
-    }
-    
-    localStorage.setItem('docsHgumbaHistory', JSON.stringify(history));
-}
-
-// Exportar histórico
-function exportHistory() {
-    const history = JSON.parse(localStorage.getItem('docsHgumbaHistory') || '[]');
-    const dataStr = JSON.stringify(history, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `historico-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('Histórico exportado!', 'success');
-}
-
-// Inicializar event listeners do dashboard
-document.addEventListener('DOMContentLoaded', () => {
-    // Toggle sidebar mobile
-    const mobileSidebarToggle = document.getElementById('mobile-sidebar-toggle');
-    if (mobileSidebarToggle) {
-        mobileSidebarToggle.addEventListener('click', toggleSidebar);
-    }
-    
-    // Busca de templates
-    const searchInput = document.getElementById('search-templates');
-    if (searchInput) {
-        searchInput.addEventListener('input', renderTemplatesGrid);
-    }
-    
-    // Filtro de categoria
-    const categoryFilter = document.getElementById('filter-category');
-    if (categoryFilter) {
-        categoryFilter.addEventListener('change', renderTemplatesGrid);
-    }
-    
-    // Inicializar dashboard se não houver sessão
-    setTimeout(() => {
-        const hasSession = localStorage.getItem('docsHgumbaSession');
-        if (hasSession) {
-            updateDashboardStats();
-            loadRecentTemplates();
-        }
-    }, 500);
-});
-
-// Sobrescrever função generatePDF para salvar histórico
-const originalGeneratePDF = window.generatePDF;
-if (typeof originalGeneratePDF === 'function') {
-    window.generatePDF = async function() {
-        await originalGeneratePDF();
-        
-        // Salvar no histórico
-        const templateSelector = document.getElementById('template-selector');
-        if (templateSelector && templateSelector.value) {
-            const template = state.templates.find(t => t.id === templateSelector.value);
-            if (template) {
-                const formData = {};
-                document.querySelectorAll('#form-fields input, #form-fields select, #form-fields textarea').forEach(input => {
-                    formData[input.name || input.id] = input.value;
-                });
-                saveToHistory(template.name, formData);
-                updateDashboardStats();
-            }
-        }
-    };
-}
-
-console.log('DocsHgumba iniciado - Versão Completa (Fases 1+2+3)!');
-
-// Fix: Atualizar dashboard após login
-const originalHandleLogin = window.handleLogin;
-if (typeof originalHandleLogin === 'function') {
-    window.handleLogin = async function(event) {
-        await originalHandleLogin.call(this, event);
-        
-        // Aguardar login completar e então atualizar dashboard
-        setTimeout(() => {
-            updateDashboardStats();
-            loadRecentTemplates();
-            renderTemplatesGrid();
-        }, 1000);
-    };
-}
-
-// Fix: Garantir que toggleMobileMenu usa toggleSidebar
-function toggleMobileMenu() {
-    toggleSidebar();
-}
-
-function closeMobileMenu() {
-    closeSidebar();
-}
