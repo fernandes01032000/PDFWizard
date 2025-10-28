@@ -778,7 +778,11 @@ async function handlePDFUpload(event) {
 
     try {
         const arrayBuffer = await file.arrayBuffer();
-        state.currentPDF = arrayBuffer;
+        
+        // SECURITY FIX: Create a copy of the ArrayBuffer to prevent detachment by PDF.js
+        // PDF.js detaches the buffer after processing, causing "detached ArrayBuffer" errors
+        // when trying to save templates later
+        state.currentPDF = arrayBuffer.slice(0);
 
         const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
         state.pdfDocument = await loadingTask.promise;
