@@ -61,7 +61,17 @@ async function checkAuthentication() {
     try {
         const storedUser = localStorage.getItem('docsHgumbaCurrentUser');
         if (storedUser) {
-            state.currentUser = JSON.parse(storedUser);
+            const currentUser = JSON.parse(storedUser);
+            
+            // SECURITY: Check if password change is required
+            if (currentUser.mustChangePassword) {
+                console.log('⚠️  Usuário com senha padrão - forçando troca!');
+                state.currentUser = currentUser;
+                showPasswordChangeScreen();
+                return;
+            }
+            
+            state.currentUser = currentUser;
             initializeApp();
         } else {
             showLoginScreen();
@@ -108,12 +118,77 @@ function showLoginScreen() {
     });
 }
 
-// Secure hash function with per-user salt
+function showPasswordChangeScreen() {
+    document.body.innerHTML = `
+        <div class="container-fluid vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);">
+            <div class="card shadow-lg" style="max-width: 500px; width: 100%;">
+                <div class="card-header bg-warning text-dark text-center py-3">
+                    <i class="bi bi-shield-exclamation fs-1"></i>
+                    <h4 class="mb-0 mt-2">Troca de Senha Obrigatória</h4>
+                    <small>Segurança Hospitalar</small>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Atenção!</strong> Você está usando uma senha padrão. 
+                        Por segurança, é <strong>obrigatório</strong> alterá-la antes de continuar.
+                    </div>
+                    <div id="password-error" class="alert alert-danger d-none"></div>
+                    <div class="mb-3">
+                        <label class="form-label">Nova Senha</label>
+                        <input type="password" id="new-password" class="form-control" 
+                               placeholder="Mínimo 8 caracteres" minlength="8">
+                        <small class="text-muted">Escolha uma senha forte e única</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar Nova Senha</label>
+                        <input type="password" id="confirm-password" class="form-control" 
+                               placeholder="Digite novamente" minlength="8">
+                    </div>
+                    <button onclick="handlePasswordChange()" class="btn btn-warning w-100">
+                        <i class="bi bi-key me-2"></i>Alterar Senha e Continuar
+                    </button>
+                    <div class="text-center mt-3">
+                        <small class="text-muted">Usuário: <strong>${state.currentUser.name}</strong></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('confirm-password').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handlePasswordChange();
+    });
+}
+
+// PBKDF2 hash function with per-user salt for offline security
 async function hashPassword(password, salt) {
     const encoder = new TextEncoder();
-    const data = encoder.encode(salt + password + 'DocsHgumba2024');
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const passwordData = encoder.encode(password);
+    const saltData = encoder.encode(salt);
+    
+    // Import password as key material
+    const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        passwordData,
+        { name: 'PBKDF2' },
+        false,
+        ['deriveBits']
+    );
+    
+    // Derive 256-bit key using PBKDF2 with 100k iterations
+    const derivedBits = await crypto.subtle.deriveBits(
+        {
+            name: 'PBKDF2',
+            salt: saltData,
+            iterations: 100000, // High iteration count for offline resistance
+            hash: 'SHA-256'
+        },
+        keyMaterial,
+        256
+    );
+    
+    const hashArray = Array.from(new Uint8Array(derivedBits));
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
@@ -164,7 +239,9 @@ async function initializeDefaultUsers() {
     }
 }
 
-async function handleLogin() {
+async function handleLogin(event) {
+    if (event) event.preventDefault();
+    
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value;
     const errorDiv = document.getElementById('login-error');
@@ -176,7 +253,7 @@ async function handleLogin() {
     }
     
     try {
-        await initializeDefaultUsers(); // Now async
+        await initializeDefaultUsers();
         
         const usersData = JSON.parse(localStorage.getItem('docsHgumbaUsers') || '[]');
         const user = usersData.find(u => u.username === username);
@@ -197,17 +274,19 @@ async function handleLogin() {
                     mustChangePassword: user.mustChangePassword || false
                 };
                 
+                // SECURITY FIX: Do NOT save session until password changed
+                if (user.mustChangePassword) {
+                    console.log('⚠️  BLOQUEANDO acesso - troca obrigatória!');
+                    state.currentUser = userSession; // Temporary in memory only
+                    showPasswordChangeScreen(); // Force change BEFORE saving session
+                    return; // BLOCK - no localStorage save
+                }
+                
+                // Only save session if password is NOT default
                 state.currentUser = userSession;
                 localStorage.setItem('docsHgumbaCurrentUser', JSON.stringify(userSession));
                 
                 console.log('✅ Login realizado:', userSession.name);
-                
-                // Check if password change is required
-                if (user.mustChangePassword) {
-                    console.log('⚠️  Este usuário deve alterar a senha padrão!');
-                    // TODO: Implementar tela de troca de senha obrigatória
-                }
-                
                 location.reload();
             } else {
                 errorDiv.textContent = 'Usuário ou senha incorretos';
@@ -220,6 +299,73 @@ async function handleLogin() {
     } catch (error) {
         console.error('Erro ao fazer login:', error);
         errorDiv.textContent = 'Erro ao processar login. Tente novamente.';
+        errorDiv.classList.remove('d-none');
+    }
+}
+
+async function handlePasswordChange(event) {
+    if (event) event.preventDefault();
+    
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+    const errorDiv = document.getElementById('password-error');
+    
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+        errorDiv.textContent = 'As senhas não coincidem!';
+        errorDiv.classList.remove('d-none');
+        return;
+    }
+    
+    // Validate minimum length
+    if (newPassword.length < 8) {
+        errorDiv.textContent = 'A senha deve ter no mínimo 8 caracteres!';
+        errorDiv.classList.remove('d-none');
+        return;
+    }
+    
+    // Validate not using default password
+    const defaultPasswords = ['admin123', 'medico123', 'enfermeira123'];
+    if (defaultPasswords.includes(newPassword)) {
+        errorDiv.textContent = 'Não use senhas padrão! Escolha uma senha forte e única.';
+        errorDiv.classList.remove('d-none');
+        return;
+    }
+    
+    try {
+        const currentUser = state.currentUser;
+        const usersData = JSON.parse(localStorage.getItem('docsHgumbaUsers') || '[]');
+        const user = usersData.find(u => u.username === currentUser.username);
+        
+        if (user) {
+            // Hash new password with user's existing salt
+            const newPasswordHash = await hashPassword(newPassword, user.salt);
+            
+            // Update user password and remove mustChangePassword flag
+            user.passwordHash = newPasswordHash;
+            user.mustChangePassword = false;
+            user.passwordChangedAt = new Date().toISOString();
+            
+            // Save updated user to localStorage
+            localStorage.setItem('docsHgumbaUsers', JSON.stringify(usersData));
+            
+            // SECURITY FIX: Save session ONLY AFTER password changed
+            currentUser.mustChangePassword = false;
+            state.currentUser = currentUser;
+            localStorage.setItem('docsHgumbaCurrentUser', JSON.stringify(currentUser));
+            
+            console.log('✅ Senha alterada com sucesso para:', currentUser.username);
+            console.log('✅ Sessão salva - acesso liberado!');
+            
+            // Reload to initialize app
+            location.reload();
+        } else {
+            errorDiv.textContent = 'Erro ao encontrar usuário!';
+            errorDiv.classList.remove('d-none');
+        }
+    } catch (error) {
+        console.error('Erro ao alterar senha:', error);
+        errorDiv.textContent = 'Erro ao processar alteração de senha!';
         errorDiv.classList.remove('d-none');
     }
 }

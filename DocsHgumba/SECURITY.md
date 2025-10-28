@@ -7,9 +7,10 @@
 O DocsHgumba utiliza um sistema de autenticação **100% offline** baseado em localStorage com as seguintes características de segurança:
 
 #### 1. Hash de Senhas
-- **Algoritmo**: SHA-256
+- **Algoritmo**: PBKDF2 com SHA-256
+- **Iterações**: 100.000 (alta resistência a ataques offline)
 - **Salt**: Único por usuário (16 bytes aleatórios)
-- **Método**: `crypto.subtle.digest()` + salt personalizado
+- **Método**: `crypto.subtle.deriveBits()` com PBKDF2
 
 #### 2. Armazenamento
 - **LocalStorage**: Usuários armazenados localmente no navegador
@@ -80,14 +81,30 @@ Cada usuário no localStorage contém:
 4. **Não compartilhar** credenciais entre profissionais
 5. **Logout** sempre ao sair da estação
 
-#### 9. Melhorias Futuras (TODO)
+#### 9. Sistema de Troca de Senha Obrigatória ✅
 
-- [ ] Tela de troca de senha obrigatória no primeiro login
-- [ ] PBKDF2 ou Argon2 ao invés de SHA-256 simples
+**IMPLEMENTADO**: Quando um usuário com senha padrão faz login:
+
+1. Sistema detecta flag `mustChangePassword: true`
+2. **BLOQUEIA acesso** mostrando modal de troca obrigatória
+3. Modal não pode ser fechado (backdrop static)
+4. Validações aplicadas:
+   - Senha ≥ 8 caracteres
+   - Confirmação deve coincidir
+   - Não permite senhas padrão (admin123, medico123, enfermeira123)
+5. Nova senha é hashada com PBKDF2 + salt do usuário
+6. Flag `mustChangePassword` removida
+7. Acesso liberado somente após troca bem-sucedida
+
+**Resultado**: Impossível usar o sistema com senhas padrão!
+
+#### 10. Melhorias Futuras (TODO)
+
 - [ ] Controle de tentativas de login (rate limiting)
 - [ ] Log de auditoria de acessos
 - [ ] Bloqueio automático após inatividade
 - [ ] Gerenciamento de usuários (adicionar/remover/editar)
+- [ ] Migração para Argon2 quando disponível em Web Crypto API
 
 ## Segurança Geral do Sistema
 
