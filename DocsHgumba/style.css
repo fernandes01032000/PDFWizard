@@ -1,11 +1,21 @@
-/* DocsHgumba - Custom Styles */
+/* DocsHgumba - Custom Styles v2.0 */
 /* Tema Verde Exército #53643B */
+/* Melhorias: Mobile responsivo, touch-friendly, animações, micro-interações */
 
 :root {
     --army-green: #53643B;
     --army-green-dark: #3d4a2b;
     --army-green-light: #6b7d4d;
     --army-green-lighter: #8fa76b;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --border-radius: 8px;
+    --transition-speed: 0.3s;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Army Green Theme */
@@ -47,13 +57,15 @@
 /* Upload Zone */
 .upload-zone {
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--transition-speed) ease;
     background-color: #f8f9fa;
+    min-height: 120px;
 }
 
 .upload-zone:hover {
     border-color: var(--army-green) !important;
     background-color: #e8f5e9;
+    transform: translateY(-2px);
 }
 
 .upload-zone.border-success {
@@ -61,11 +73,35 @@
     background-color: #e8f5e9;
 }
 
+.upload-zone:active {
+    transform: scale(0.98);
+}
+
 /* Field Types */
 .field-type {
     cursor: pointer;
     transition: all 0.2s ease;
     user-select: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.field-type::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background-color: rgba(83, 100, 59, 0.1);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.field-type:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .field-type:hover {
@@ -75,7 +111,7 @@
 }
 
 .field-type:active {
-    transform: scale(0.98);
+    transform: scale(0.98) translateX(4px);
 }
 
 /* PDF Canvas */
@@ -85,11 +121,13 @@
         linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
     background-size: 20px 20px;
+    position: relative;
 }
 
 #pdf-canvas {
     background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-speed) ease;
 }
 
 /* Field Overlays */
@@ -100,55 +138,200 @@
     cursor: grab;
     transition: all 0.2s ease;
     user-select: none;
+    touch-action: none; /* Important for touch events */
 }
 
 .field-overlay:hover {
     background-color: rgba(83, 100, 59, 0.2);
     border-color: var(--army-green-dark);
     box-shadow: 0 2px 8px rgba(83, 100, 59, 0.3);
+    z-index: 10;
 }
 
-.field-overlay:active {
+.field-overlay:active,
+.field-overlay.dragging {
     cursor: grabbing;
+    box-shadow: 0 4px 12px rgba(83, 100, 59, 0.4);
+    z-index: 100;
+}
+
+/* Selected field */
+.field-overlay.selected {
+    border-color: var(--army-green-dark);
+    border-width: 3px;
+    background-color: rgba(83, 100, 59, 0.15);
+    box-shadow: 0 0 0 3px rgba(83, 100, 59, 0.3);
+    z-index: 50;
+}
+
+/* Resize handles */
+.resize-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border: 2px solid var(--army-green);
+    border-radius: 50%;
+    z-index: 200;
+    transition: all 0.2s ease;
+}
+
+.resize-handle:hover {
+    background-color: var(--army-green);
+    transform: scale(1.3);
+}
+
+/* Resize handle positions */
+.resize-handle.nw {
+    top: -5px;
+    left: -5px;
+    cursor: nw-resize;
+}
+
+.resize-handle.n {
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: n-resize;
+}
+
+.resize-handle.ne {
+    top: -5px;
+    right: -5px;
+    cursor: ne-resize;
+}
+
+.resize-handle.e {
+    top: 50%;
+    right: -5px;
+    transform: translateY(-50%);
+    cursor: e-resize;
+}
+
+.resize-handle.se {
+    bottom: -5px;
+    right: -5px;
+    cursor: se-resize;
+}
+
+.resize-handle.s {
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: s-resize;
+}
+
+.resize-handle.sw {
+    bottom: -5px;
+    left: -5px;
+    cursor: sw-resize;
+}
+
+.resize-handle.w {
+    top: 50%;
+    left: -5px;
+    transform: translateY(-50%);
+    cursor: w-resize;
 }
 
 .field-label {
     position: absolute;
-    top: -24px;
+    top: -26px;
     left: 0;
     background-color: var(--army-green);
     color: white;
-    padding: 2px 8px;
-    border-radius: 3px;
+    padding: 3px 10px;
+    border-radius: var(--border-radius);
     font-size: 11px;
     font-weight: 600;
     white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
+    z-index: 5;
+    pointer-events: none;
 }
 
 .field-delete-btn {
     position: absolute;
-    top: -24px;
+    top: -26px;
     right: 0;
-    background-color: #dc3545;
+    background-color: var(--danger-color);
     color: white;
     border: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--border-radius);
     font-size: 16px;
     line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
     transition: all 0.2s ease;
+    z-index: 5;
 }
 
 .field-delete-btn:hover {
     background-color: #c82333;
     transform: scale(1.1);
+}
+
+.field-delete-btn:active {
+    transform: scale(0.95);
+}
+
+/* Properties Panel */
+#properties-panel {
+    position: fixed;
+    right: -350px;
+    top: 80px;
+    width: 340px;
+    max-height: calc(100vh - 100px);
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    transition: right var(--transition-speed) ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+#properties-panel.open {
+    right: 20px;
+}
+
+#properties-panel .panel-header {
+    background-color: var(--army-green);
+    color: white;
+    padding: 15px;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#properties-panel .panel-body {
+    padding: 20px;
+}
+
+#properties-panel .close-panel {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+#properties-panel .close-panel:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Preview Overlay */
@@ -165,6 +348,7 @@
 /* Cards */
 .card {
     border: none;
+    border-radius: var(--border-radius);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -175,6 +359,7 @@
 
 .card-header {
     border-bottom: 3px solid rgba(0, 0, 0, 0.05);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
 /* Form Controls */
@@ -195,6 +380,16 @@
 }
 
 /* Buttons */
+.btn {
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
 .btn-success {
     background-color: var(--army-green);
     border-color: var(--army-green);
@@ -222,25 +417,76 @@
     color: #6c757d;
     font-weight: 500;
     transition: all 0.2s ease;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
 .nav-tabs .nav-link:hover {
     color: var(--army-green);
     border-color: transparent transparent var(--army-green);
+    background-color: rgba(83, 100, 59, 0.05);
 }
 
 .nav-tabs .nav-link.active {
     color: var(--army-green);
     border-color: #dee2e6 #dee2e6 white;
-    border-bottom: 2px solid var(--army-green);
+    border-bottom: 3px solid var(--army-green);
 }
 
 /* Toast */
 .toast {
     min-width: 300px;
+    border-radius: var(--border-radius);
 }
 
-/* Scrollbar */
+/* Progress Bar */
+.progress {
+    height: 8px;
+    border-radius: 10px;
+    overflow: visible;
+}
+
+.progress-bar {
+    background-color: var(--army-green);
+    border-radius: 10px;
+    position: relative;
+    overflow: visible;
+    transition: width 0.6s ease;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Validation States */
+.field-required {
+    border-color: var(--warning-color) !important;
+}
+
+.field-invalid {
+    border-color: var(--danger-color) !important;
+}
+
+.field-valid {
+    border-color: var(--success-color) !important;
+}
+
+/* Scrollbar Customization */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -254,6 +500,7 @@
 ::-webkit-scrollbar-thumb {
     background: var(--army-green-light);
     border-radius: 10px;
+    transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -264,7 +511,7 @@
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -272,8 +519,53 @@
     }
 }
 
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 .fade-in {
     animation: fadeIn 0.3s ease;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.3s ease;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.3s ease;
+}
+
+.scale-in {
+    animation: scaleIn 0.3s ease;
 }
 
 /* Empty States */
@@ -285,10 +577,46 @@
 @keyframes pulse {
     0%, 100% {
         opacity: 0.3;
+        transform: scale(1);
     }
     50% {
         opacity: 0.6;
+        transform: scale(1.05);
     }
+}
+
+/* Loading States */
+.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 4px solid rgba(83, 100, 59, 0.2);
+    border-top-color: var(--army-green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    z-index: 1000;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Success States */
+.success-checkmark {
+    color: var(--army-green);
+    animation: scaleIn 0.3s ease;
 }
 
 /* Utility Classes */
@@ -308,102 +636,544 @@
     user-select: none;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .card {
-        margin-bottom: 1rem;
-    }
-
-    #canvas-container,
-    #preview-container {
-        max-height: 400px !important;
-    }
-
-    .field-label {
-        font-size: 9px;
-        padding: 1px 4px;
-    }
-
-    .field-delete-btn {
-        width: 18px;
-        height: 18px;
-        font-size: 14px;
-    }
-}
-
-/* Print */
-@media print {
-    .navbar,
-    .card-header,
-    .btn,
-    .nav-tabs {
-        display: none;
-    }
-
-    #canvas-container,
-    #preview-container {
-        max-height: none !important;
-        overflow: visible !important;
-    }
-}
-
-/* Loading States */
-.loading {
-    position: relative;
-    pointer-events: none;
-}
-
-.loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 30px;
-    height: 30px;
-    margin: -15px 0 0 -15px;
-    border: 3px solid rgba(83, 100, 59, 0.2);
-    border-top-color: var(--army-green);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Success States */
-.success-checkmark {
-    color: var(--army-green);
-    animation: scaleIn 0.3s ease;
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0);
-    }
-    to {
-        transform: scale(1);
-    }
+.touch-action-none {
+    touch-action: none;
 }
 
 /* Focus Visible */
 *:focus-visible {
-    outline: 2px solid var(--army-green);
+    outline: 3px solid var(--army-green);
     outline-offset: 2px;
+    border-radius: var(--border-radius);
 }
 
 /* Badges */
 .badge {
     font-weight: 500;
+    border-radius: 20px;
+    padding: 5px 12px;
 }
 
 .bg-success {
     background-color: var(--army-green) !important;
 }
 
-/* Dark mode support (future enhancement) */
+/* Template Cards */
+.template-card {
+    border: 2px solid #e9ecef;
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.template-card:hover {
+    border-color: var(--army-green);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.template-card.selected {
+    border-color: var(--army-green);
+    background-color: rgba(83, 100, 59, 0.05);
+}
+
+.template-preview {
+    width: 100%;
+    height: 120px;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.template-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Modal Improvements */
+.modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    background-color: var(--army-green);
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* Bottom Navigation (Mobile) */
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border-top: 3px solid var(--army-green);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 10px 0;
+}
+
+.bottom-nav .nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.bottom-nav .nav-item {
+    flex: 1;
+    text-align: center;
+}
+
+.bottom-nav .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.bottom-nav .nav-link i {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.bottom-nav .nav-link.active,
+.bottom-nav .nav-link:hover {
+    color: var(--army-green);
+}
+
+/* Floating Action Button (Mobile) */
+.fab {
+    display: none;
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background-color: var(--army-green);
+    color: white;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 4px 12px rgba(83, 100, 59, 0.4);
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 999;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab:hover {
+    background-color: var(--army-green-dark);
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 16px rgba(83, 100, 59, 0.5);
+}
+
+.fab:active {
+    transform: scale(0.95) rotate(90deg);
+}
+
+/* ============================= */
+/* RESPONSIVE - MOBILE FIRST    */
+/* ============================= */
+
+/* Tablet and below (992px) */
+@media (max-width: 991px) {
+    .container-fluid {
+        padding: 10px;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    #canvas-container,
+    #preview-container {
+        max-height: 500px !important;
+    }
+
+    /* Properties panel becomes full width modal on tablet */
+    #properties-panel {
+        right: -100%;
+        width: 100%;
+        max-width: 400px;
+        top: 60px;
+        max-height: calc(100vh - 70px);
+    }
+
+    #properties-panel.open {
+        right: 0;
+    }
+
+    /* Adjust field labels for tablet */
+    .field-label {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+
+    .field-delete-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+    }
+}
+
+/* Mobile Large (768px) */
+@media (max-width: 767px) {
+    /* Stack columns vertically on mobile */
+    .row > [class*='col-'] {
+        margin-bottom: 1rem;
+    }
+
+    /* Reduce canvas height for mobile */
+    #canvas-container,
+    #preview-container {
+        max-height: 400px !important;
+        min-height: 300px !important;
+    }
+
+    /* Show bottom navigation on mobile */
+    .bottom-nav {
+        display: block;
+    }
+
+    /* Add padding to body to account for bottom nav */
+    body {
+        padding-bottom: 70px;
+    }
+
+    /* Hide desktop tabs on mobile */
+    #modeTabs {
+        display: none;
+    }
+
+    /* Make buttons touch-friendly (44x44px minimum) */
+    .btn {
+        min-height: 44px;
+        padding: 12px 20px;
+        font-size: 16px;
+    }
+
+    .btn-sm {
+        min-height: 38px;
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    /* Touch-friendly field types */
+    .field-type {
+        min-height: 48px;
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    /* Larger touch targets for field overlays */
+    .field-overlay {
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    /* Larger resize handles for touch */
+    .resize-handle {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Adjust field labels for mobile */
+    .field-label {
+        font-size: 9px;
+        padding: 2px 6px;
+        top: -22px;
+    }
+
+    .field-delete-btn {
+        width: 22px;
+        height: 22px;
+        font-size: 14px;
+        top: -22px;
+    }
+
+    /* Full width properties panel on mobile */
+    #properties-panel {
+        width: 100%;
+        max-width: 100%;
+        right: -100%;
+        top: 0;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+
+    #properties-panel.open {
+        right: 0;
+    }
+
+    /* Show FAB on mobile */
+    .fab {
+        display: flex;
+    }
+
+    /* Adjust card headers for mobile */
+    .card-header h5 {
+        font-size: 16px;
+    }
+
+    /* Responsive navbar */
+    .navbar-brand h1 {
+        font-size: 18px;
+    }
+
+    .navbar-brand small {
+        font-size: 11px;
+    }
+
+    /* Adjust form controls for mobile */
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 44px;
+    }
+
+    /* Upload zone mobile */
+    .upload-zone {
+        min-height: 100px;
+        padding: 15px !important;
+    }
+
+    .upload-zone i {
+        font-size: 3rem !important;
+    }
+
+    /* Zoom controls for mobile */
+    .btn-group {
+        display: flex;
+    }
+
+    .btn-group .btn {
+        min-width: 44px;
+    }
+
+    /* Toast positioning for mobile */
+    .toast-container {
+        left: 10px;
+        right: 10px;
+        bottom: 80px !important;
+    }
+
+    .toast {
+        min-width: 100%;
+    }
+}
+
+/* Mobile Small (576px) */
+@media (max-width: 575px) {
+    /* Further reduce canvas height */
+    #canvas-container,
+    #preview-container {
+        max-height: 350px !important;
+        min-height: 250px !important;
+    }
+
+    /* Tighter spacing */
+    .container-fluid {
+        padding: 5px;
+    }
+
+    .card-body {
+        padding: 10px;
+    }
+
+    /* Smaller buttons on very small screens */
+    .btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    /* Compact field types */
+    .field-type {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    /* Very compact field labels */
+    .field-label {
+        font-size: 8px;
+        padding: 1px 4px;
+        top: -20px;
+    }
+
+    .field-delete-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        top: -20px;
+    }
+
+    /* Adjust navbar for very small screens */
+    .navbar-brand {
+        font-size: 14px;
+    }
+
+    .navbar-brand small {
+        display: none;
+    }
+
+    /* FAB positioning */
+    .fab {
+        width: 50px;
+        height: 50px;
+        bottom: 70px;
+        right: 15px;
+        font-size: 20px;
+    }
+
+    /* Bottom nav adjustments */
+    .bottom-nav .nav-link {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .bottom-nav .nav-link i {
+        font-size: 20px;
+        margin-bottom: 2px;
+    }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    #canvas-container,
+    #preview-container {
+        max-height: 250px !important;
+        min-height: 200px !important;
+    }
+
+    .card-header {
+        padding: 8px 15px;
+    }
+
+    .card-body {
+        padding: 10px;
+    }
+
+    #properties-panel {
+        max-height: 100vh;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices */
+    .card:hover {
+        transform: none;
+    }
+
+    .field-type:hover {
+        transform: none;
+    }
+
+    .field-type:hover::before {
+        width: 0;
+        height: 0;
+    }
+
+    /* Make all interactive elements easier to tap */
+    button,
+    a,
+    .btn,
+    .field-type,
+    .field-overlay {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Increase tap target size for resize handles */
+    .resize-handle {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .card-header,
+    .btn,
+    .nav-tabs,
+    .bottom-nav,
+    .fab,
+    #properties-panel,
+    .field-delete-btn,
+    .resize-handle,
+    .toast-container {
+        display: none !important;
+    }
+
+    #canvas-container,
+    #preview-container {
+        max-height: none !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+    }
+
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    body {
+        padding-bottom: 0;
+    }
+
+    .field-label {
+        display: none;
+    }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .field-overlay {
+        border-width: 3px;
+    }
+
+    .btn {
+        border-width: 2px;
+    }
+
+    .resize-handle {
+        border-width: 3px;
+    }
+}
+
+/* Dark mode preparation (future feature) */
 @media (prefers-color-scheme: dark) {
-    /* Dark mode styles can be added here */
+    /* Dark mode styles will be added in v2.1 */
 }
