@@ -1,0 +1,109 @@
+{
+  "version": "1.0",
+  "categories": [
+    {
+      "id": "orientacoes",
+      "name": "Orientações Pós-Alta",
+      "items": [
+        {
+          "id": "repouso",
+          "title": "Repouso relativo",
+          "text": "Repouso relativo por 7 dias. Evitar esforços físicos intensos e levantamento de peso."
+        },
+        {
+          "id": "retorno_febre",
+          "title": "Retorno por febre",
+          "text": "Retornar imediatamente ao Pronto Socorro em caso de febre acima de 38°C, dor intensa, sangramento ou qualquer sinal de piora."
+        },
+        {
+          "id": "curativos",
+          "title": "Cuidados com curativos",
+          "text": "Manter curativos limpos e secos. Trocar o curativo diariamente ou quando necessário. Não molhar a ferida por 48 horas."
+        },
+        {
+          "id": "medicacao",
+          "title": "Uso de medicações",
+          "text": "Tomar as medicações prescritas conforme orientação médica, nos horários e doses indicados. Não interromper o tratamento sem orientação médica."
+        },
+        {
+          "id": "alimentacao",
+          "title": "Alimentação",
+          "text": "Manter alimentação leve e balanceada. Evitar alimentos gordurosos e de difícil digestão nas primeiras 48 horas. Aumentar ingesta hídrica."
+        },
+        {
+          "id": "retorno_ambulatorio",
+          "title": "Retorno ambulatorial",
+          "text": "Retorno ambulatorial em 15 dias para reavaliação e acompanhamento da evolução clínica."
+        }
+      ]
+    },
+    {
+      "id": "evolucoes",
+      "name": "Evoluções Médicas",
+      "items": [
+        {
+          "id": "evolucao_estavel",
+          "title": "Paciente estável",
+          "text": "Paciente estável hemodinamicamente, afebril, sem queixas. Mantendo dieta oral aceitando bem. Diurese e evacuação presentes. Segue internado em observação."
+        },
+        {
+          "id": "evolucao_melhora",
+          "title": "Melhora clínica",
+          "text": "Paciente apresenta melhora progressiva do quadro clínico. Sinais vitais estáveis, afebril nas últimas 24h. Aguardando liberação de exames para alta hospitalar."
+        },
+        {
+          "id": "evolucao_dor",
+          "title": "Queixa álgica",
+          "text": "Paciente com queixa de dor moderada (EVA 5/10). Medicado conforme prescrição com boa resposta. Sinais vitais dentro dos parâmetros normais."
+        }
+      ]
+    },
+    {
+      "id": "prescricoes",
+      "name": "Prescrições Comuns",
+      "items": [
+        {
+          "id": "dipirona",
+          "title": "Dipirona 1g",
+          "text": "Dipirona 1g EV se dor ou febre, de 6/6h"
+        },
+        {
+          "id": "omeprazol",
+          "title": "Omeprazol",
+          "text": "Omeprazol 40mg VO 1x ao dia, em jejum"
+        },
+        {
+          "id": "sf",
+          "title": "Soro Fisiológico",
+          "text": "SF 0,9% 1000ml EV correr em 8 horas"
+        },
+        {
+          "id": "sg",
+          "title": "Soro Glicosado",
+          "text": "SG 5% 500ml + NaCl 20% 10ml + KCl 19,1% 10ml EV correr em 8 horas"
+        }
+      ]
+    },
+    {
+      "id": "diagnosticos",
+      "name": "Diagnósticos Comuns",
+      "items": [
+        {
+          "id": "pneumonia",
+          "title": "Pneumonia",
+          "text": "Pneumonia Adquirida na Comunidade"
+        },
+        {
+          "id": "itu",
+          "title": "ITU",
+          "text": "Infecção do Trato Urinário"
+        },
+        {
+          "id": "dor_abdominal",
+          "title": "Dor abdominal",
+          "text": "Dor abdominal inespecífica a esclarecer"
+        }
+      ]
+    }
+  ]
+}
