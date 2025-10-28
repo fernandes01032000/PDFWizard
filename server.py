@@ -4,7 +4,7 @@ import http.server
 import socketserver
 import os
 
-PORT = 8080
+PORT = 5000
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -18,8 +18,9 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         super().end_headers()
 
 if __name__ == '__main__':
-    with socketserver.TCPServer(("", PORT), MyHTTPRequestHandler) as httpd:
-        print(f"DocsHgumba server running at http://localhost:{PORT}")
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("0.0.0.0", PORT), MyHTTPRequestHandler) as httpd:
+        print(f"DocsHgumba server running at http://0.0.0.0:{PORT}")
         print(f"Serving directory: {DIRECTORY}")
         print("Press Ctrl+C to stop")
         try:
