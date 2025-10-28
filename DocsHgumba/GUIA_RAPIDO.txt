@@ -1,0 +1,141 @@
+╔════════════════════════════════════════════════════════════╗
+║                   DocsHgumba - GUIA RÁPIDO                 ║
+║            Sistema Offline de PDFs Editáveis               ║
+╚════════════════════════════════════════════════════════════╝
+
+📍 LOCALIZAÇÃO:
+   ~/Documentos/asp fernandes/DocsHgumba/
+
+🚀 COMO ABRIR:
+
+   1. Abra o navegador Chrome ou Edge
+
+   2. Pressione Ctrl+O ou cole na barra de endereços:
+
+      file:///home/user/Documentos/asp%20fernandes/DocsHgumba/index.html
+
+   3. Pronto! O DocsHgumba está funcionando.
+
+═══════════════════════════════════════════════════════════
+
+📝 MODO DESIGN (Criar Templates):
+
+   1. Faça upload de um PDF
+   2. Clique nos tipos de campo (esquerda)
+   3. Arraste os campos para posicionar no PDF
+   4. Digite um nome e clique em "Salvar Template"
+
+═══════════════════════════════════════════════════════════
+
+✍️ MODO PREENCHIMENTO (Usar Templates):
+
+   1. Clique na aba "Modo Preenchimento"
+   2. Selecione um template salvo
+   3. Preencha os campos (veja preview em tempo real)
+   4. Clique em "Gerar e Baixar PDF"
+
+═══════════════════════════════════════════════════════════
+
+📂 ESTRUTURA:
+
+   DocsHgumba/
+   ├── index.html          ← ABRA ESTE ARQUIVO
+   ├── app.js              ← Lógica JavaScript
+   ├── style.css           ← Estilo visual
+   ├── README.md           ← Documentação completa
+   ├── install.sh          ← Script de instalação
+   ├── GUIA_RAPIDO.txt     ← Este arquivo
+   ├── assets/
+   │   ├── pdfs/           ← Salve PDFs originais aqui
+   │   └── generated/      ← Salve PDFs gerados aqui
+   └── data/
+       └── templates.json  ← Metadados (automático)
+
+═══════════════════════════════════════════════════════════
+
+🎨 TIPOS DE CAMPO DISPONÍVEIS:
+
+   📝 Texto (linha única)      - Nome, CPF, matrícula
+   📄 Texto (múltiplas linhas) - Observações, descrições
+   ☑️ Checkbox                 - Sim/Não, marcações
+   📅 Data                     - Datas
+   ✍️ Assinatura               - Nome para assinar
+
+═══════════════════════════════════════════════════════════
+
+💾 ONDE FICAM SALVOS OS DADOS?
+
+   Templates: localStorage do navegador
+   PDFs gerados: ~/Downloads/ (padrão)
+
+   ⚠️ Se limpar cache do navegador, templates são apagados!
+
+═══════════════════════════════════════════════════════════
+
+🌐 USAR EM REDE:
+
+   1. Compartilhe a pasta "asp fernandes" na rede
+   2. Anote o caminho: \\IP\asp fernandes\DocsHgumba\
+   3. Outros PCs abrem o index.html pelo caminho de rede
+
+═══════════════════════════════════════════════════════════
+
+✅ CHECKLIST PÓS-INSTALAÇÃO:
+
+   [ ] Abrir index.html no navegador
+   [ ] Fazer upload de um PDF de teste
+   [ ] Adicionar um campo de texto
+   [ ] Salvar como template de teste
+   [ ] Ir ao Modo Preenchimento
+   [ ] Preencher e gerar PDF
+   [ ] Verificar download do PDF
+
+═══════════════════════════════════════════════════════════
+
+🔧 PROBLEMAS COMUNS:
+
+   ❌ PDF não carrega
+      → Use Chrome ou Edge
+      → Verifique se é um PDF válido
+
+   ❌ Templates não aparecem
+      → Certifique-se de ter salvado no Modo Design
+      → Verifique o console (F12)
+
+   ❌ Campos não ficam no PDF
+      → Posicione os campos corretamente
+      → Preencha todos os campos obrigatórios
+
+═══════════════════════════════════════════════════════════
+
+📞 SUPORTE:
+
+   1. Leia o README.md completo
+   2. Verifique o console do navegador (F12)
+   3. Entre em contato com o administrador
+
+═══════════════════════════════════════════════════════════
+
+🎯 TEMPLATES SUGERIDOS PARA CRIAR:
+
+   ✅ Sumário de Alta Hospitalar
+   ✅ Atendimento de Síndrome Gripal
+   ✅ Check List de Ambulatório
+   ✅ Check List de Farmácia (CCIH)
+   ✅ Notificação de Acidente Biológico
+   ✅ Protocolo de Cirurgia Segura
+   ✅ Relatório de Evolução (EVAM)
+   ✅ Devolução de Medicamentos
+
+═══════════════════════════════════════════════════════════
+
+🚀 COMEÇAR AGORA:
+
+   cd ~/Documentos/"asp fernandes"/DocsHgumba
+
+   Abra o index.html e comece a criar seus templates!
+
+═══════════════════════════════════════════════════════════
+
+DocsHgumba v1.0.0 - Sistema 100% Offline
+Desenvolvido para profissionais de saúde ❤️🏥

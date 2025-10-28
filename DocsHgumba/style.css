@@ -1,0 +1,409 @@
+/* DocsHgumba - Custom Styles */
+/* Tema Verde Exército #53643B */
+
+:root {
+    --army-green: #53643B;
+    --army-green-dark: #3d4a2b;
+    --army-green-light: #6b7d4d;
+    --army-green-lighter: #8fa76b;
+}
+
+/* Army Green Theme */
+.bg-army-green {
+    background-color: var(--army-green) !important;
+}
+
+.text-army-green {
+    color: var(--army-green) !important;
+}
+
+.border-army-green {
+    border-color: var(--army-green) !important;
+}
+
+.btn-army-green {
+    background-color: var(--army-green);
+    border-color: var(--army-green);
+    color: white;
+}
+
+.btn-army-green:hover {
+    background-color: var(--army-green-dark);
+    border-color: var(--army-green-dark);
+    color: white;
+}
+
+.btn-outline-success {
+    border-color: var(--army-green);
+    color: var(--army-green);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--army-green);
+    border-color: var(--army-green);
+    color: white;
+}
+
+/* Upload Zone */
+.upload-zone {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.upload-zone:hover {
+    border-color: var(--army-green) !important;
+    background-color: #e8f5e9;
+}
+
+.upload-zone.border-success {
+    border-color: var(--army-green) !important;
+    background-color: #e8f5e9;
+}
+
+/* Field Types */
+.field-type {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.field-type:hover {
+    background-color: #e8f5e9 !important;
+    border-color: var(--army-green) !important;
+    transform: translateX(4px);
+}
+
+.field-type:active {
+    transform: scale(0.98);
+}
+
+/* PDF Canvas */
+#canvas-container {
+    background-color: #f5f5f5;
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+#pdf-canvas {
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Field Overlays */
+.field-overlay {
+    position: absolute;
+    border: 2px solid var(--army-green);
+    background-color: rgba(83, 100, 59, 0.1);
+    cursor: grab;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.field-overlay:hover {
+    background-color: rgba(83, 100, 59, 0.2);
+    border-color: var(--army-green-dark);
+    box-shadow: 0 2px 8px rgba(83, 100, 59, 0.3);
+}
+
+.field-overlay:active {
+    cursor: grabbing;
+}
+
+.field-label {
+    position: absolute;
+    top: -24px;
+    left: 0;
+    background-color: var(--army-green);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.field-delete-btn {
+    position: absolute;
+    top: -24px;
+    right: 0;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+.field-delete-btn:hover {
+    background-color: #c82333;
+    transform: scale(1.1);
+}
+
+/* Preview Overlay */
+#preview-overlay {
+    pointer-events: none;
+}
+
+#preview-overlay > div {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    line-height: 1.2;
+    padding: 2px;
+}
+
+/* Cards */
+.card {
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    border-bottom: 3px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Form Controls */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--army-green);
+    box-shadow: 0 0 0 0.25rem rgba(83, 100, 59, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--army-green);
+    border-color: var(--army-green);
+}
+
+.form-check-input:focus {
+    border-color: var(--army-green);
+    box-shadow: 0 0 0 0.25rem rgba(83, 100, 59, 0.25);
+}
+
+/* Buttons */
+.btn-success {
+    background-color: var(--army-green);
+    border-color: var(--army-green);
+}
+
+.btn-success:hover {
+    background-color: var(--army-green-dark);
+    border-color: var(--army-green-dark);
+}
+
+.btn-success:focus {
+    background-color: var(--army-green-dark);
+    border-color: var(--army-green-dark);
+    box-shadow: 0 0 0 0.25rem rgba(83, 100, 59, 0.5);
+}
+
+.btn-success:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    opacity: 0.65;
+}
+
+/* Tabs */
+.nav-tabs .nav-link {
+    color: #6c757d;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--army-green);
+    border-color: transparent transparent var(--army-green);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--army-green);
+    border-color: #dee2e6 #dee2e6 white;
+    border-bottom: 2px solid var(--army-green);
+}
+
+/* Toast */
+.toast {
+    min-width: 300px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--army-green-light);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--army-green);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Empty States */
+#empty-canvas i,
+#empty-preview i {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Utility Classes */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-grab {
+    cursor: grab;
+}
+
+.cursor-grabbing {
+    cursor: grabbing;
+}
+
+.user-select-none {
+    user-select: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    #canvas-container,
+    #preview-container {
+        max-height: 400px !important;
+    }
+
+    .field-label {
+        font-size: 9px;
+        padding: 1px 4px;
+    }
+
+    .field-delete-btn {
+        width: 18px;
+        height: 18px;
+        font-size: 14px;
+    }
+}
+
+/* Print */
+@media print {
+    .navbar,
+    .card-header,
+    .btn,
+    .nav-tabs {
+        display: none;
+    }
+
+    #canvas-container,
+    #preview-container {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+}
+
+/* Loading States */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border: 3px solid rgba(83, 100, 59, 0.2);
+    border-top-color: var(--army-green);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Success States */
+.success-checkmark {
+    color: var(--army-green);
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+/* Focus Visible */
+*:focus-visible {
+    outline: 2px solid var(--army-green);
+    outline-offset: 2px;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+}
+
+.bg-success {
+    background-color: var(--army-green) !important;
+}
+
+/* Dark mode support (future enhancement) */
+@media (prefers-color-scheme: dark) {
+    /* Dark mode styles can be added here */
+}

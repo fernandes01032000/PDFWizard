@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocsHgumba - Sistema de PDFs Editáveis</title>
+
+    <!-- Bootstrap 5.0 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- PDF-lib -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-light">
+
+    <!-- Header -->
+    <nav class="navbar navbar-dark bg-army-green shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="bi bi-file-earmark-pdf fs-3 me-2"></i>
+                <div>
+                    <h1 class="h4 mb-0">DocsHgumba</h1>
+                    <small class="text-white-50">Sistema 100% Offline de PDFs Editáveis</small>
+                </div>
+            </a>
+            <span class="badge bg-success">
+                <i class="bi bi-circle-fill"></i> Offline
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid py-4">
+
+        <!-- Mode Tabs -->
+        <ul class="nav nav-tabs mb-4" id="modeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="design-tab" data-bs-toggle="tab" data-bs-target="#design-mode"
+                        type="button" role="tab" onclick="switchMode('design')">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Modo Design (Criar Templates)
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fill-tab" data-bs-toggle="tab" data-bs-target="#fill-mode"
+                        type="button" role="tab" onclick="switchMode('fill')">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    Modo Preenchimento (Usar Templates)
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="modeTabContent">
+
+            <!-- Design Mode -->
+            <div class="tab-pane fade show active" id="design-mode" role="tabpanel">
+                <div class="row g-4">
+
+                    <!-- Left Panel - Tools -->
+                    <div class="col-lg-3">
+
+                        <!-- Upload PDF -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-army-green text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-upload me-2"></i>1. Upload PDF</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="upload-zone border border-2 border-dashed rounded p-4 text-center" id="upload-zone">
+                                    <i class="bi bi-cloud-upload fs-1 text-muted"></i>
+                                    <p class="text-muted mt-2">Clique ou arraste PDF aqui</p>
+                                    <input type="file" id="pdf-upload" accept=".pdf" class="d-none">
+                                    <button onclick="document.getElementById('pdf-upload').click()"
+                                            class="btn btn-sm btn-outline-success">
+                                        Selecionar arquivo
+                                    </button>
+                                </div>
+                                <div id="pdf-info" class="mt-2 small text-muted d-none"></div>
+                            </div>
+                        </div>
+
+                        <!-- Field Library -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-army-green text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-grid-3x3 me-2"></i>2. Tipos de Campo</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2" id="field-library">
+                                    <div class="field-type btn btn-outline-success text-start" data-type="text">
+                                        <i class="bi bi-input-cursor me-2"></i>Texto (linha única)
+                                    </div>
+                                    <div class="field-type btn btn-outline-success text-start" data-type="textarea">
+                                        <i class="bi bi-textarea-t me-2"></i>Texto (múltiplas linhas)
+                                    </div>
+                                    <div class="field-type btn btn-outline-success text-start" data-type="checkbox">
+                                        <i class="bi bi-check-square me-2"></i>Checkbox
+                                    </div>
+                                    <div class="field-type btn btn-outline-success text-start" data-type="date">
+                                        <i class="bi bi-calendar-date me-2"></i>Data
+                                    </div>
+                                    <div class="field-type btn btn-outline-success text-start" data-type="signature">
+                                        <i class="bi bi-pen me-2"></i>Assinatura
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Save Template -->
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-army-green text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-save me-2"></i>3. Salvar Template</h5>
+                            </div>
+                            <div class="card-body">
+                                <input
+                                    type="text"
+                                    id="template-name"
+                                    placeholder="Nome do template"
+                                    class="form-control mb-3"
+                                >
+                                <button onclick="saveTemplate()" class="btn btn-success w-100">
+                                    <i class="bi bi-save me-2"></i>Salvar Template
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Center Panel - Canvas -->
+                    <div class="col-lg-9">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0 text-army-green">
+                                        <i class="bi bi-easel me-2"></i>Canvas de Design
+                                    </h5>
+                                    <div class="btn-group" role="group">
+                                        <button onclick="zoomOut()" class="btn btn-sm btn-outline-secondary" title="Reduzir zoom">
+                                            <i class="bi bi-dash-lg"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" disabled id="zoom-level">100%</button>
+                                        <button onclick="zoomIn()" class="btn btn-sm btn-outline-secondary" title="Aumentar zoom">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <!-- PDF Canvas -->
+                                <div id="canvas-container" class="position-relative border overflow-auto"
+                                     style="min-height: 600px; max-height: 800px;">
+                                    <div id="pdf-canvas" class="position-relative mx-auto">
+                                        <canvas id="pdf-render"></canvas>
+                                        <div id="fields-overlay" class="position-absolute top-0 start-0 w-100 h-100"
+                                             style="pointer-events: none;"></div>
+                                    </div>
+                                    <div id="empty-canvas" class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                        <div class="text-center">
+                                            <i class="bi bi-file-earmark-pdf" style="font-size: 6rem; opacity: 0.3;"></i>
+                                            <p class="fs-5 mt-3">Faça upload de um PDF para começar</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Fill Mode -->
+            <div class="tab-pane fade" id="fill-mode" role="tabpanel">
+                <div class="row g-4">
+
+                    <!-- Left Panel - Form -->
+                    <div class="col-lg-4">
+
+                        <!-- Template Selector -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-army-green text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-folder me-2"></i>1. Selecionar Template</h5>
+                            </div>
+                            <div class="card-body">
+                                <select id="template-selector" onchange="loadTemplate()" class="form-select">
+                                    <option value="">Selecione um template...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Form Fields -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-army-green text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-pencil me-2"></i>2. Preencher Campos</h5>
+                            </div>
+                            <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                                <div id="form-fields">
+                                    <p class="text-muted text-center py-5">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        Selecione um template para começar
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-army-green text-white">
+                                <h5 class="card-title mb-0"><i class="bi bi-file-pdf me-2"></i>3. Gerar PDF</h5>
+                            </div>
+                            <div class="card-body">
+                                <button onclick="generatePDF()" id="btn-generate" disabled
+                                        class="btn btn-success w-100 mb-2">
+                                    <i class="bi bi-download me-2"></i>Gerar e Baixar PDF
+                                </button>
+                                <button onclick="clearForm()" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-x-circle me-2"></i>Limpar Formulário
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Panel - Preview -->
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title mb-0 text-army-green">
+                                    <i class="bi bi-eye me-2"></i>Preview em Tempo Real
+                                </h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="preview-container" class="position-relative border overflow-auto"
+                                     style="min-height: 600px; max-height: 800px;">
+                                    <div id="pdf-preview" class="position-relative mx-auto">
+                                        <canvas id="pdf-preview-render"></canvas>
+                                        <div id="preview-overlay" class="position-absolute top-0 start-0 w-100 h-100"
+                                             style="pointer-events: none;"></div>
+                                    </div>
+                                    <div id="empty-preview" class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                        <div class="text-center">
+                                            <i class="bi bi-eye-slash" style="font-size: 6rem; opacity: 0.3;"></i>
+                                            <p class="fs-5 mt-3">Selecione um template para ver o preview</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast align-items-center" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-message"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5.0 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom App Logic -->
+    <script src="app.js"></script>
+
+</body>
+</html>
