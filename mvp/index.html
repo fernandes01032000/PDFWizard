@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocsHgumba MVP - PDF Templates</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/bootstrap-icons.css">
+
+    <!-- PDF.js -->
+    <script src="../assets/js/pdf.min.js"></script>
+
+    <!-- PDF-lib -->
+    <script src="../assets/js/pdf-lib.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" onclick="navigateTo('templates')">
+                <i class="bi bi-file-earmark-pdf"></i>
+                DocsHgumba MVP
+            </a>
+            <div>
+                <button class="btn btn-sm btn-outline-light" onclick="navigateTo('criar')">
+                    <i class="bi bi-plus-circle"></i> Criar Template
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid mt-3">
+
+        <!-- PAGE 1: Templates List -->
+        <div id="page-templates" class="page active">
+            <h2>
+                <i class="bi bi-folder"></i> Meus Templates
+            </h2>
+            <hr>
+
+            <div class="row" id="templates-list">
+                <!-- Templates will be rendered here -->
+            </div>
+
+            <div id="empty-state" class="text-center py-5" style="display: none;">
+                <i class="bi bi-folder-x" style="font-size: 4rem; color: #ccc;"></i>
+                <h4 class="mt-3 text-muted">Nenhum template criado</h4>
+                <p class="text-muted">Clique em "Criar Template" para começar</p>
+                <button class="btn btn-primary" onclick="navigateTo('criar')">
+                    <i class="bi bi-plus-circle"></i> Criar Primeiro Template
+                </button>
+            </div>
+        </div>
+
+        <!-- PAGE 2: Create Template -->
+        <div id="page-criar" class="page">
+            <div class="row">
+                <div class="col-md-3">
+                    <h4>
+                        <i class="bi bi-plus-circle"></i> Criar Template
+                    </h4>
+
+                    <!-- Upload PDF -->
+                    <div class="card mb-3" id="upload-section">
+                        <div class="card-header">
+                            <strong>1. Upload PDF</strong>
+                        </div>
+                        <div class="card-body">
+                            <input type="file" id="pdf-upload" accept="application/pdf" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Field Types -->
+                    <div class="card mb-3" id="fields-section" style="display: none;">
+                        <div class="card-header">
+                            <strong>2. Adicionar Campos</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-sm btn-outline-primary" onclick="addField('text')">
+                                    <i class="bi bi-input-cursor-text"></i> Texto
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="addField('textarea')">
+                                    <i class="bi bi-textarea-t"></i> Área de Texto
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="addField('date')">
+                                    <i class="bi bi-calendar"></i> Data
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="addField('checkbox')">
+                                    <i class="bi bi-check-square"></i> Checkbox
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="addField('signature')">
+                                    <i class="bi bi-pencil"></i> Assinatura
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Template -->
+                    <div class="card" id="save-section" style="display: none;">
+                        <div class="card-header">
+                            <strong>3. Salvar Template</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Nome do Template</label>
+                                <input type="text" id="template-name" class="form-control" placeholder="Ex: Atestado Médico">
+                            </div>
+                            <button class="btn btn-success w-100" onclick="saveTemplate()">
+                                <i class="bi bi-save"></i> Salvar Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Canvas Area -->
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div id="canvas-container">
+                                <canvas id="pdf-canvas"></canvas>
+                                <div id="fields-overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <!-- Field Properties -->
+                    <div class="card" id="properties-panel" style="display: none;">
+                        <div class="card-header">
+                            <strong>Propriedades do Campo</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <label class="form-label">Nome do Campo</label>
+                                <input type="text" id="field-name" class="form-control form-control-sm">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Largura (px)</label>
+                                <input type="number" id="field-width" class="form-control form-control-sm">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Altura (px)</label>
+                                <input type="number" id="field-height" class="form-control form-control-sm">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Tamanho da Fonte</label>
+                                <input type="number" id="field-fontsize" class="form-control form-control-sm" value="12">
+                            </div>
+                            <button class="btn btn-sm btn-danger w-100" onclick="deleteSelectedField()">
+                                <i class="bi bi-trash"></i> Deletar Campo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: Fill Template -->
+        <div id="page-preencher" class="page">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>
+                        <i class="bi bi-pencil-square"></i> Preencher Template
+                    </h4>
+
+                    <!-- Template Selector -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>Selecionar Template</strong>
+                        </div>
+                        <div class="card-body">
+                            <select id="template-select" class="form-select" onchange="loadTemplateForFill()">
+                                <option value="">Escolha um template...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Form Fields -->
+                    <div class="card" id="fill-form-container" style="display: none;">
+                        <div class="card-header">
+                            <strong>Preencher Campos</strong>
+                        </div>
+                        <div class="card-body" id="fill-form">
+                            <!-- Form fields will be rendered here -->
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-success w-100 mb-2" onclick="generatePDF()">
+                                <i class="bi bi-file-earmark-pdf"></i> Gerar PDF
+                            </button>
+                            <button class="btn btn-secondary w-100" onclick="clearForm()">
+                                <i class="bi bi-eraser"></i> Limpar Formulário
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <!-- Preview Area -->
+                    <div class="card">
+                        <div class="card-header">
+                            <strong>Preview</strong>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="preview-container">
+                                <canvas id="preview-canvas"></canvas>
+                                <div id="preview-overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Signature Modal -->
+    <div class="modal fade" id="signatureModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Desenhar Assinatura</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <canvas id="signature-canvas" width="460" height="200" style="border: 1px solid #ddd; cursor: crosshair;"></canvas>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="clearSignature()">
+                        <i class="bi bi-eraser"></i> Limpar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveSignature()">
+                        <i class="bi bi-check"></i> Salvar Assinatura
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+
+    <!-- App Logic -->
+    <script src="app.js"></script>
+
+</body>
+</html>
